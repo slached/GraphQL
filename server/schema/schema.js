@@ -30,8 +30,8 @@ const ProjectType = new GraphQLObjectType({
         id: {type: GraphQLID},
         client: {
             type: ClientType,
-            resolve(parent) {
-                return Client.findById(parent.clientId)
+            resolve(self) {
+                return Client.findById(self.clientId)
             }
         },
         name: {type: GraphQLString},
@@ -74,7 +74,7 @@ const RootQuery = new GraphQLObjectType({
     }
 })
 
-// Mutations (Alter Request such Create,Delete,Update)
+// Mutations (Alter Request such Create,Delete and Update)
 const mutation = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
@@ -154,7 +154,7 @@ const mutation = new GraphQLObjectType({
                     name: args.name,
                     status: args.status,
                     clientId: args.clientId,
-                },{new:true})
+                }, {new: true})
             }
         }
     }
