@@ -95,7 +95,15 @@ const mutation = new GraphQLObjectType({
         deleteClient: {
             type: ClientType,
             args: {id: {type: GraphQLNonNull(GraphQLID)}},
-            resolve(parent, args) {
+            async resolve(parent, args) {
+                const projectsThatDeletedClient = await Project.find({clientId: args.id})
+
+                if (projectsThatDeletedClient) {
+                    for (const client of projectsThatDeletedClient) {
+                        await Project.findByIdAndDelete(client.id)
+                    }
+                }
+
                 return Client.findByIdAndDelete(args.id)
             }
         },
@@ -137,6 +145,7 @@ const mutation = new GraphQLObjectType({
             args: {
                 id: {type: GraphQLNonNull(GraphQLID)},
                 name: {type: GraphQLString},
+                description: {type: GraphQLString},
                 status: {
                     type: new GraphQLEnumType({
                         name: "UpdateStatus",
@@ -156,6 +165,24 @@ const mutation = new GraphQLObjectType({
                     clientId: args.clientId,
                 }, {new: true})
             }
+        },
+        // update client
+        updateClient: {
+            type: ClientType,
+            args: {
+                id: {type: GraphQLNonNull(GraphQLID)},
+                name: {type: GraphQLString},
+                email: {type: GraphQLString},
+                phone: {type: GraphQLString},
+            },
+            resolve(parent, args, context) {
+                return Client.findByIdAndUpdate(args.id, {
+                    name: args.name,
+                    email: args.email,
+                    phone: args.phone
+                }, {new: true})
+            }
+
         }
     }
 })
