@@ -14,6 +14,8 @@ import Landing from "./Pages/Landing";
 import Projects from "./Pages/Projects";
 import CreateProject from "./Pages/CreateProject";
 import CreateClient from "./Pages/CreateClient";
+import EditProject from "./Pages/EditProject";
+import EditClient from "./Pages/EditClient";
 
 const router = createBrowserRouter(createRoutesFromElements(
     <Route element={<Master/>}>
@@ -22,6 +24,8 @@ const router = createBrowserRouter(createRoutesFromElements(
         <Route path={"projects"} element={<Projects/>}/>
         <Route path={"createProject"} element={<CreateProject/>}/>
         <Route path={"createClient"} element={<CreateClient/>}/>
+        <Route path={"editProject/:id"} element={<EditProject/>}/>
+        <Route path={"editClient/:id"} element={<EditClient/>}/>
     </Route>
 ))
 

@@ -7,14 +7,24 @@ import {GET_CLIENT_QUERY} from "../Queries/clientQueries";
 
 // mutations
 import {DELETE_CLIENT} from '../Mutations/clientMutations'
+import {GET_PROJECT_QUERY} from "../Queries/projectQueries";
+import {useNavigate} from "react-router-dom";
 
 export default function Clients(props) {
 
+    const navigate = useNavigate();
     const {loading, error, data} = useQuery(GET_CLIENT_QUERY)
     const [deleteClient] = useMutation(DELETE_CLIENT, {
         //refetchQueries: [{query: GET_CLIENT_QUERY}],
         update(cache, {data: {deleteClient}}) {
             const {clients} = cache.readQuery({query: GET_CLIENT_QUERY})
+            const {projects} = cache.readQuery({query: GET_PROJECT_QUERY})
+
+            cache.writeQuery({
+                query: GET_PROJECT_QUERY,
+                data: {projects: projects.filter(project => project.client.id !== deleteClient.id)}
+            })
+
             cache.writeQuery({
                 query: GET_CLIENT_QUERY,
                 data: {clients: clients.filter(client => client.id !== deleteClient.id)}
@@ -32,15 +42,20 @@ export default function Clients(props) {
                     <div key={index} className={"flex flex-col gap-2 p-2 rounded-md border-2 border-black w-fit"}>
                         <div className={"flex justify-end"}>
                             <div className={"absolute"}>
+                                <img onClick={() => navigate(`/editClient/${value.id}`)}
+                                     alt={"edit"} src={svgs.edit_icon}
+                                     className={"relative bg-black rounded-full p-[3px] bottom-5 right-3 cursor-pointer"}/>
+                            </div>
+                            <div className={"absolute"}>
                                 <img onClick={() => deleteClient({variables: {id: value.id}})}
                                      alt={"delete"} src={svgs.delete_icon}
                                      className={"relative bg-black rounded-full p-[3px] bottom-5 left-4 cursor-pointer"}/>
                             </div>
                         </div>
-                        <p><strong>ID: </strong>{value.id}</p>
-                        <p><strong>Name: </strong>{value.name}</p>
-                        <p><strong>E-mail: </strong>{value.email}</p>
-                        <p><strong>Phone: </strong>{value.phone}</p>
+                        <p><strong>ID: </strong>{value?.id}</p>
+                        <p><strong>Name: </strong>{value?.name}</p>
+                        <p><strong>E-mail: </strong>{value?.email}</p>
+                        <p><strong>Phone: </strong>{value?.phone}</p>
                     </div>
                 )) : <p>Loading...</p>}
             </div>
